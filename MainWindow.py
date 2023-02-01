@@ -37,8 +37,12 @@ class QCustomQWidget(QWidget):
         self.comp_iconQLabel = QLabel()
         self.comp_iconQLabel.setMinimumSize(80, 80)
         self.comp_iconQLabel.setMaximumSize(80, 80)
+        self.more_info_button = QPushButton("More info")
+        self.more_info_button.clicked.connect(self.clicked)
+        self.more_info_button.setFixedSize(100, 30)
         self.allQHBoxLayout.addWidget(self.comp_iconQLabel, 0)
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
+        self.allQHBoxLayout.addWidget(self.more_info_button, 2)
         self.setLayout(self.allQHBoxLayout)
 
     def setComputerName(self, text):
@@ -53,6 +57,13 @@ class QCustomQWidget(QWidget):
 
     def setIcon(self):
         self.comp_iconQLabel.setPixmap(QPixmap('computer_icon.png'))
+
+    def setButtonName(self, text):
+        self.more_info_button.setObjectName(str(text))
+
+    def clicked(self):
+        sender = self.sender()
+        print(sender.objectName())
 
 
 class MainWindow(QMainWindow):
@@ -77,6 +88,7 @@ class MainWindow(QMainWindow):
         compLineWidget.setComputerName(str(self.list_of_comps[self.index].name))
         compLineWidget.setComputerStatus(str(status))
         compLineWidget.setIcon()
+        compLineWidget.setButtonName(self.list_of_comps[self.index].hardware_id)
         computersQListWidgetItem = QListWidgetItem(self.computersQListWidget)
         computersQListWidgetItem.setSizeHint(compLineWidget.sizeHint())
         self.computersQListWidget.addItem(computersQListWidgetItem)
