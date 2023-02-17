@@ -6,10 +6,14 @@ from PyQt6.QtWidgets import QApplication, \
     QVBoxLayout, \
     QLabel, \
     QHBoxLayout, \
-    QListWidget, QListWidgetItem
-from PyQt6.QtGui import QPixmap
+    QListWidget, QListWidgetItem, QMenu, QGridLayout, QDialog
+from PyQt6.QtGui import QPixmap, QAction
 import sys
+
+from MAPIKeyDialogWindow import MAPIKeyDialogWindow
+from QRCodeDialog import QRCodeDialog
 from computer import Computer
+from CimputerInfoWindow import ComputerInfoWindow
 import requests
 
 
@@ -19,7 +23,7 @@ def parse_all():
     list_of_dicts = list_of_dicts['computers']
     list_of_comps = list()
     for el in list_of_dicts:
-        tmp = Computer(el)
+        tmp = Computer(**el)
         list_of_comps.append(tmp)
     return list_of_comps
 
@@ -63,26 +67,57 @@ class QCustomQWidget(QWidget):
 
     def clicked(self):
         sender = self.sender()
-        print(sender.objectName())
+        self.window = ComputerInfoWindow(sender.objectName())
+        self.window.show()
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.index = 0
+        self._createMenuBar()
+        self.list_of_comps = parse_all()
+        self.initUI()
+
+    def initUI(self):
+        grid = QGridLayout()
+        grid.setSpacing(10)
+
+        computers_button = QPushButton("Computers")
+        computers_button.setFixedSize(180, 40)
+        computers_button.clicked.connect(self.clicked)
+
+        users_button = QPushButton("AD Users")
+        users_button.setFixedSize(180, 40)
+        users_button.clicked.connect(self.clicked)
+
+        keys_button = QPushButton("API Keys")
+        keys_button.setFixedSize(180, 40)
+        keys_button.clicked.connect(self.clicked)
+
+        grid.addWidget(computers_button, 0, 0)
+        grid.addWidget(users_button, 0, 1)
+        grid.addWidget(keys_button, 0, 2)
+
+        self.computersQListWidget = QListWidget()
+        self.CreateComputerListWidget()
+        grid.addWidget(self.computersQListWidget, 1, 0, 1, 3)
+
         self.setWindowTitle("InBetween")
         self.setMinimumSize(QSize(600, 600))
-        self.list_of_comps = parse_all()
-        for comp in self.list_of_comps:
-            pass
-        self.index = 0
-        self.computersQListWidget = QListWidget(self)
-        self.setCentralWidget(self.computersQListWidget)
-        self.fillListWidget()
+
+        centralWidget = QWidget()
+        centralWidget.setLayout(grid)
+        self.setCentralWidget(centralWidget)
+
+    def CreateComputerListWidget(self):
+        self.fillComputerListWidget()
         self.timer = QTimer()
-        self.timer.timeout.connect(self.fillListWidget)
+        self.timer.timeout.connect(self.fillComputerListWidget)
         self.timer.start(100)
 
-    def fillListWidget(self):
+
+    def fillComputerListWidget(self):
         status = 'Active'
         compLineWidget = QCustomQWidget()
         compLineWidget.setComputerName(str(self.list_of_comps[self.index].name))
@@ -97,3 +132,26 @@ class MainWindow(QMainWindow):
         self.index += 1
         if self.index == len(self.list_of_comps):
             self.timer.stop()
+
+    def _createMenuBar(self):
+        self.all_menu = self.menuBar()
+        mamangement_menu = QMenu("Management", self)
+        self.all_menu.addMenu(mamangement_menu)
+        actions_menu = self.all_menu.addMenu("Actions")
+        self.all_menu.addMenu(actions_menu)
+
+        NewMobileAPIAction = QAction('New mobile API key', self)
+        NewMobileAPIAction.setStatusTip('Release new API key to connect mobile app')
+        NewMobileAPIAction.triggered.connect(self.generateAPIKey)
+        mamangement_menu.addAction(NewMobileAPIAction)
+
+    def clicked(self):
+        pass
+
+    def generateAPIKey(self):
+        dlg = MAPIKeyDialogWindow(self)
+        dlg.setWindowTitle("New API Key Creation")
+        if dlg.exec():
+            dlg_qr = QRCodeDialog(self)
+            dlg_qr.setWindowTitle("QRCode")
+            dlg_qr.exec()
