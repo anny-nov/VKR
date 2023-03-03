@@ -16,11 +16,22 @@ from ComputerCustomWidget import QCustomQWidget
 from MAPIKeyDialogWindow import MAPIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
 from computer import Computer
-from CimputerInfoWindow import ComputerInfoWindow
+from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
 import requests
 
+API_KEY = ''
 
-API_KEY = 'osLCnQVbwC1OoGSzO8mIgA'
+
+def check_api_key():
+    key_file = open('api_key', 'r+')
+    key = str(key_file.read())
+    if len(key) > 0:
+        pass
+    else:
+        dlg = FirstAPIKeyDialogWindow()
+        dlg.setWindowTitle("First log in")
+        dlg.exec()
+        pass
 
 
 def parse_all():
@@ -35,7 +46,7 @@ def parse_all():
 
 
 def parse_all_keys():
-    all_keys_json = requests.get('http://46.151.30.76:5000/api/clients' + '?api_key=' + API_KEY)
+    all_keys_json = requests.get('http://46.151.30.76:5000/api/clients?api_key=' + API_KEY)
     list_of_dicts = all_keys_json.json()
     list_of_dicts = list_of_dicts['clients']
     list_of_keys = list()
@@ -45,10 +56,10 @@ def parse_all_keys():
     return list_of_keys
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        check_api_key()
         self.index = 0
         self._createMenuBar()
         self.initUI()
@@ -89,7 +100,6 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.fillComputerListWidget)
         self.timer.start(50)
-
 
     def fillComputerListWidget(self):
         if self.index < len(self.list_of_comps):

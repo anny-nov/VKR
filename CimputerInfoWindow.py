@@ -42,7 +42,7 @@ class ComputerInfoWindow(QMainWindow):
 
         ComputerName = QLabel(self.comp_info.name)
         font = QFont()
-        font.setPointSize(18)
+        font.setPointSize(14)
         ComputerName.setFont(font)
         ComputerId = QLabel('Hardware ID: ' + self.comp_info.hardware_id)
         CpuInfo = QLabel('CPU: ' + self.comp_info.cpu)
@@ -52,13 +52,13 @@ class ComputerInfoWindow(QMainWindow):
         ChartsHeader.setFont(font)
         headers_font = QFont()
         headers_font.setPointSize(14)
-        ComputerId.setFont(headers_font)
-        CpuInfo.setFont(headers_font)
         DisksHeader.setFont(headers_font)
         Gpusheader.setFont(headers_font)
 
         disks_list = QListWidget()
+        disks_list.setMaximumSize(400,100)
         gpus_list = QListWidget()
+        gpus_list.setMaximumSize(400,100)
         for el in self.comp_info.disks:
             disks_list.addItem(el)
         for el in self.comp_info.gpus:
@@ -81,7 +81,9 @@ class ComputerInfoWindow(QMainWindow):
         self.grid.addWidget(temp_chart, 8, 3, 1, 2)
         print(self.grid.itemAtPosition(3,3))
 
-        self.setLayout(self.grid)
+        view = QWidget(self)
+        self.setCentralWidget(view)
+        view.setLayout(self.grid)
 
     def _createMenuBar(self):
         self.all_menu = self.menuBar()
