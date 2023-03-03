@@ -52,8 +52,8 @@ class Ui_MainWindow(QWidget): #object
 
         self.pushButton.clicked.connect(self.send_message)
         self.send_file_button.clicked.connect(self.send_file)
-        sio.on('my_response1', self.receive_message)
-        sio.on('my_response', self.exe_status)
+        sio.on('my_response', self.receive_message)
+        sio.on('my_response1', self.exe_status)
 
         #image
         self.image_button = QtWidgets.QPushButton(self)
