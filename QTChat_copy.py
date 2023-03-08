@@ -22,32 +22,28 @@ from qtpy import QtWidgets, QtGui, QtCore
 sio = socketio.Client()
 sio.connect('http://46.151.30.76:5000?api_key=AvIRCSEqgPxoUK8uUqaatQ')
 
-class Ui_MainWindow(QWidget): #object
-    #def setupUi(self, MainWindow):
+class Chat_Widget(QWidget):
     def __init__(self):
         super().__init__()
-        self.chat_layout = QGridLayout()
-        self.chat_layout.setSpacing(10)
-        self.chat_layout.setAlignment(Qt.AlignTop)
-        self.setLayout(self.chat_layout)
-        self.setWindowTitle("Chat")
-        self.resize(640, 500)
+        self.initLayout()
 
-        # Create the widgets
+    def initLayout(self):
+        chat_layout = QGridLayout()
+        chat_layout.setSpacing(10)
+
         self.textEdit = QtWidgets.QTextEdit(self)
-        self.textEdit.setGeometry(QtCore.QRect(10, 10, 620, 400))
+        #self.textEdit.setGeometry(QtCore.QRect(10, 10, 300, 400))
         self.textEdit.setReadOnly(True)
-#
+
         self.lineEdit = QtWidgets.QLineEdit(self)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 420, 500, 30))
+        #self.lineEdit.setGeometry(QtCore.QRect(10, 420, 500, 30))
 
         self.pushButton = QtWidgets.QPushButton(self)
-        self.pushButton.setGeometry(QtCore.QRect(520, 420, 110, 30))
+        #self.pushButton.setGeometry(QtCore.QRect(520, 420, 110, 30))
         self.pushButton.setText("Send")
 
-        # Create file send button
         self.send_file_button = QtWidgets.QPushButton(self)
-        self.send_file_button.setGeometry(QtCore.QRect(520, 460, 110, 30))
+        #self.send_file_button.setGeometry(QtCore.QRect(520, 460, 110, 30))
         self.send_file_button.setText("Send File")
 
         self.pushButton.clicked.connect(self.send_message)
@@ -55,17 +51,17 @@ class Ui_MainWindow(QWidget): #object
         sio.on('my_response', self.receive_message)
         sio.on('my_response1', self.exe_status)
 
-        #image
         self.image_button = QtWidgets.QPushButton(self)
-        self.image_button.setGeometry(QtCore.QRect(520, 500, 110, 30))
+        #self.image_button.setGeometry(QtCore.QRect(520, 500, 110, 30))
         self.image_button.setText("Send Image")
         self.image_label = QtWidgets.QLabel(self)
-        self.image_label.setGeometry(15,15,300,300)
+        #self.image_label.setGeometry(15,15,300,300)
         self.image_button.clicked.connect(self.send_image)
         sio.on('my_response1', self.receive_image)
 
-
-
+        chat_layout.addWidget(self.textEdit)
+        chat_layout.addWidget(self.lineEdit)
+        return chat_layout
 
     def send_file(self):
 
@@ -135,7 +131,6 @@ class Ui_MainWindow(QWidget): #object
                 image_data = f.read()
             sio.emit('my_event', {'username': "Dima", 'image_data': base64.b64encode(image_data).decode()})
 
-
     def receive_image(self, data):
         # Receive an image from the server and display it in the chat box
         message_data = data['data']
@@ -143,17 +138,3 @@ class Ui_MainWindow(QWidget): #object
         pixmap = QtGui.QPixmap.fromImage(QImage.fromData(image_data))
         scaled_pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
         self.image_label.setPixmap(scaled_pixmap)
-
-
-
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    #MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    #ui.setupUi(MainWindow)
-    #MainWindow.show()
-    ui.show()
-    sys.exit(app.exec_())

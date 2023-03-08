@@ -26,7 +26,8 @@ def check_api_key():
     key_file = open('api_key', 'r+')
     key = str(key_file.read())
     if len(key) > 0:
-        pass
+        global API_KEY
+        API_KEY = key
     else:
         dlg = FirstAPIKeyDialogWindow()
         dlg.setWindowTitle("First log in")
