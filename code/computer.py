@@ -9,5 +9,6 @@ class Computer:
     gpus: list
     disks: list
     ram: int
+    used: int
 
 

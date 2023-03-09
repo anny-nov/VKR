@@ -1,7 +1,6 @@
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QGridLayout, QLineEdit
 import qrcode
 
-from QRCodeDialog import QRCodeDialog
 
 
 class MAPIKeyDialogWindow(QDialog):

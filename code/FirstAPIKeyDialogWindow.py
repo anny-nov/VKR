@@ -21,7 +21,7 @@ class FirstAPIKeyDialogWindow(QDialog):
     def ok_clicked(self):
         key = self.input_box.text()
         if len(key)>0:
-            file = open('api_key', 'w')
+            file = open('../api_key', 'w')
             file.write(key)
             self.accept()
         else:

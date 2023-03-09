@@ -5,9 +5,7 @@ from PyQt6.QtWidgets import QApplication, \
     QMainWindow, \
     QPushButton, \
     QWidget, \
-    QVBoxLayout, \
     QLabel, \
-    QHBoxLayout, \
     QListWidget, QListWidgetItem, QMenu, QGridLayout
 from PyQt6.QtGui import QPixmap, QAction, QFont
 import sys
@@ -16,8 +14,9 @@ from MAPIKeyDialogWindow import MAPIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
 from computer import Computer
 import requests
+from QTChat_copy import Chat_Widget
 
-API_KEY = 'osLCnQVbwC1OoGSzO8mIgA'
+API_KEY = 'TZPP8LaSPoYCAU6iTtDnWA'
 
 
 def parse_from_json(hardware_id):
@@ -64,12 +63,14 @@ class ComputerInfoWindow(QMainWindow):
         for el in self.comp_info.gpus:
             gpus_list.addItem(el)
 
-        temp_chat = QLabel('There will be chat soon')
+        #temp_chat = QLabel('There will be chat soon')
+        chat_class = Chat_Widget()
+        chat = chat_class.initLayout()
         temp_logs = QLabel('There will be logs soon')
         temp_chart = QLabel('There will be charts soon')
 
         self.grid.addWidget(temp_logs, 0, 0, 5, 2)
-        self.grid.addWidget(temp_chat, 6, 0, 5, 2)
+        self.grid.addLayout(chat, 6, 0, 5, 2)
         self.grid.addWidget(ComputerName, 0, 3, 1, 2)
         self.grid.addWidget(ComputerId, 1, 3, 1, 2)
         self.grid.addWidget(CpuInfo, 2, 3, 1, 2)

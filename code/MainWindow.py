@@ -1,13 +1,10 @@
 from PyQt6.QtCore import QSize, Qt, QTimer
-from PyQt6.QtWidgets import QApplication, \
-    QMainWindow, \
+from PyQt6.QtWidgets import QMainWindow, \
     QPushButton, \
     QWidget, \
-    QVBoxLayout, \
     QLabel, \
-    QHBoxLayout, \
-    QListWidget, QListWidgetItem, QMenu, QGridLayout, QDialog
-from PyQt6.QtGui import QPixmap, QAction
+    QListWidget, QListWidgetItem, QMenu, QGridLayout
+from PyQt6.QtGui import QAction
 import os
 
 from APIKey import APIKey
@@ -23,21 +20,27 @@ API_KEY = ''
 
 
 def check_api_key():
-    key_file = open('api_key', 'r+')
+    key_file = open('../api_key', 'r+')
     key = str(key_file.read())
-    if len(key) > 0:
-        global API_KEY
-        API_KEY = key
-    else:
+    if len(key) == 0:
         dlg = FirstAPIKeyDialogWindow()
         dlg.setWindowTitle("First log in")
         dlg.exec()
-        pass
+    fill_api_key()
+
+def fill_api_key():
+    key_file = open('../api_key', 'r+')
+    key = str(key_file.read())
+    global API_KEY
+    API_KEY = key
 
 
 def parse_all():
-    all_comps_json = requests.get('http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY)
+    message = 'http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY
+    print(message)
+    all_comps_json = requests.get(message)
     list_of_dicts = all_comps_json.json()
+    print(list_of_dicts)
     list_of_dicts = list_of_dicts['computers']
     list_of_comps = list()
     for el in list_of_dicts:
@@ -49,6 +52,7 @@ def parse_all():
 def parse_all_keys():
     all_keys_json = requests.get('http://46.151.30.76:5000/api/clients?api_key=' + API_KEY)
     list_of_dicts = all_keys_json.json()
+    print(list_of_dicts)
     list_of_dicts = list_of_dicts['clients']
     list_of_keys = list()
     for el in list_of_dicts:
