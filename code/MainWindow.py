@@ -10,7 +10,7 @@ import os
 from APIKey import APIKey
 from APIKeyCustomWidget import QKeyCustomQWidget
 from ComputerCustomWidget import QCustomQWidget
-from MAPIKeyDialogWindow import MAPIKeyDialogWindow
+from APIKeyDialogWindow import APIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
 from computer import Computer
 from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
@@ -131,9 +131,9 @@ class MainWindow(QMainWindow):
         actions_menu = self.all_menu.addMenu("Actions")
         self.all_menu.addMenu(actions_menu)
 
-        NewMobileAPIAction = QAction('New mobile API key', self)
-        NewMobileAPIAction.setStatusTip('Release new API key to connect mobile app')
-        NewMobileAPIAction.triggered.connect(self.generateAPIKey)
+        NewMobileAPIAction = QAction('New API key', self)
+        NewMobileAPIAction.setStatusTip('Release new API key to connect personal computer, server or mobile phone')
+        NewMobileAPIAction.triggered.connect(self.new_APIKey)
         mamangement_menu.addAction(NewMobileAPIAction)
 
     def clicked(self, text):
@@ -155,8 +155,8 @@ class MainWindow(QMainWindow):
                 error.setAlignment(Qt.AlignmentFlag.AlignHCenter)
                 self.grid.addWidget(error, 1, 0, 1, 3)
 
-    def generateAPIKey(self):
-        dlg = MAPIKeyDialogWindow(self)
+    def new_APIKey(self):
+        dlg = APIKeyDialogWindow(self)
         dlg.setWindowTitle("New API Key Creation")
         if dlg.exec():
             dlg_qr = QRCodeDialog(self)

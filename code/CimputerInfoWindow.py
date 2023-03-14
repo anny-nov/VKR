@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import QApplication, \
 from PyQt6.QtGui import QPixmap, QAction, QFont
 import sys
 
-from MAPIKeyDialogWindow import MAPIKeyDialogWindow
+from APIKeyDialogWindow import APIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
 from computer import Computer
 import requests
@@ -117,7 +117,7 @@ class ComputerInfoWindow(QMainWindow):
         self.close()
 
     def generateAPIKey(self):
-        dlg = MAPIKeyDialogWindow(self)
+        dlg = APIKeyDialogWindow(self)
         dlg.setWindowTitle("New API Key Creation")
         if dlg.exec():
             dlg_qr = QRCodeDialog(self)
