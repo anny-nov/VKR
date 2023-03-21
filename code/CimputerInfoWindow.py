@@ -16,7 +16,7 @@ from computer import Computer
 import requests
 from QTChat_copy import Chat_Widget
 
-API_KEY = 'TZPP8LaSPoYCAU6iTtDnWA'
+API_KEY = 'UzOzYa52ecw83hHju4y-OQ'
 
 
 def parse_from_json(hardware_id):

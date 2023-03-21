@@ -37,7 +37,7 @@ class QCustomQWidget(QWidget):
             self.ComputerStatus.setStyleSheet('color: rgb(255, 0, 0);')
 
     def setIcon(self):
-        self.comp_iconQLabel.setPixmap(QPixmap('computer_icon.png'))
+        self.comp_iconQLabel.setPixmap(QPixmap('../computer_icon.png'))
 
     def setButtonName(self, text):
         self.more_info_button.setObjectName(str(text))

@@ -17,7 +17,7 @@ from io import BytesIO
 from PIL import Image
 from qtpy import QtWidgets, QtGui, QtCore
 
-API_KEY = 'TZPP8LaSPoYCAU6iTtDnWA'
+API_KEY = 'UzOzYa52ecw83hHju4y-OQ'
 # Create a SocketIO instance and connect to the chat server
 sio = socketio.Client()
 sio.connect('http://46.151.30.76:5000?api_key=test_api_key')
@@ -26,10 +26,6 @@ sio.connect('http://46.151.30.76:5000?api_key=test_api_key')
 class Chat_Widget(QMainWindow):
     def __init__(self):
         super().__init__()
-        layout = self.initLayout()
-        centralWidget = QWidget()
-        centralWidget.setLayout(self.layout)
-        self.setCentralWidget(centralWidget)
 
     def initLayout(self):
         chat_layout = QGridLayout()
@@ -109,6 +105,7 @@ class Chat_Widget(QMainWindow):
             self.textEdit.append(f"{json_message['from']} ({json_message['time']}):       {json_message['message']}")
 
     def receive_message(self, data):
+        print(data)
         # Parse the JSON message and extract the relevant fields
         message_data = data['data']
         sender = 'Server'
