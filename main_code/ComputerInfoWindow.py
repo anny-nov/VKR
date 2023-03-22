@@ -71,11 +71,13 @@ class ComputerInfoWindow(QMainWindow):
         for el in self.comp_info.gpus:
             gpus_list.addItem(el)
 
+
         #temp_chat = QLabel('There will be chat soon')
         chat_class = Chat_Widget()
         chat = chat_class.initLayout()
         temp_logs = QLabel('There will be logs soon')
         temp_chart = QLabel('There will be charts soon')
+
 
         self.grid.addWidget(temp_logs, 0, 0, 5, 2)
         self.grid.addLayout(chat, 6, 0, 5, 2)

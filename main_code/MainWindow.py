@@ -39,7 +39,6 @@ def fill_api_key():
 
 def parse_all():
     message = 'http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY
-    print(message)
     all_comps_json = requests.get(message)
     list_of_dicts = all_comps_json.json()
     list_of_dicts = list_of_dicts['computers']

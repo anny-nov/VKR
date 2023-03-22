@@ -9,7 +9,7 @@ from PyQt6.QtGui import QImage
 from qtpy import QtWidgets, QtCore, QtGui, uic
 import os
 import socketio
-from PyQt6.QtWidgets import QFileDialog, QGridLayout, QLabel, QWidget, QMainWindow
+from PyQt6.QtWidgets import QFileDialog, QGridLayout, QLabel, QWidget, QMainWindow, QVBoxLayout
 
 import os
 import base64
@@ -27,19 +27,24 @@ def fill_api_key():
 
 # Create a SocketIO instance and connect to the chat server
 sio = socketio.Client()
-sio.connect('http://46.151.30.76:5000?api_key=test_api_key')
+sio.connect('http://46.151.30.76:5000?api_key=' + API_KEY)
 
 
 class Chat_Widget(QMainWindow):
     def __init__(self):
         super().__init__()
+<<<<<<< Updated upstream:main_code/QTChat_copy.py
+=======
+
+>>>>>>> Stashed changes:code/QTChat_copy.py
 
     def initLayout(self):
         chat_layout = QGridLayout()
         chat_layout.setSpacing(10)
 
-        self.textEdit = QtWidgets.QTextEdit(self)
-        self.textEdit.setReadOnly(True)
+        #self.textEdit = QtWidgets.QTextEdit(self)
+        #self.textEdit.setReadOnly(True)
+        self.message_history = QVBoxLayout()
 
         self.lineEdit = QtWidgets.QLineEdit(self)
 
@@ -56,11 +61,10 @@ class Chat_Widget(QMainWindow):
 
         self.image_button = QtWidgets.QPushButton(self)
         self.image_button.setText("Send Image")
-        self.image_label = QtWidgets.QLabel(self)
         self.image_button.clicked.connect(self.send_image)
         sio.on('my_response1', self.receive_image)
 
-        chat_layout.addWidget(self.textEdit, 0, 0, 1, 2)
+        chat_layout.addLayout(self.message_history, 0, 0, 1, 2)
         chat_layout.addWidget(self.lineEdit, 1, 0, 1, 1)
         chat_layout.addWidget(self.pushButton, 1, 1, 1, 1)
         chat_layout.addWidget(self.image_button, 2, 1, 1, 1)
@@ -109,7 +113,9 @@ class Chat_Widget(QMainWindow):
 
             # Clear the QLineEdit widget
             self.lineEdit.setText("")
-            self.textEdit.append(f"{json_message['from']} ({json_message['time']}):       {json_message['message']}")
+            msg = QLabel(f"{json_message['from']} ({json_message['time']}):       {json_message['message']}")
+            self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+            #self.textEdit.append(msg)
 
     def receive_message(self, data):
         print(data)
@@ -118,14 +124,18 @@ class Chat_Widget(QMainWindow):
         sender = 'Server'
         message = message_data['message']
         time = message_data['time']
-        self.textEdit.append(f"{sender} ({time}):       {message}")
+        msg = QLabel(f"{sender} ({time}):       {message}")
+        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+        #self.textEdit.append(f"{sender} ({time}):       {message}")
         print(data)
 
     def exe_status(self, data):
         # Parse the JSON message and extract the relevant fields
         message_data = data['data']
         message = message_data['message']
-        self.textEdit.append(f"{message}")
+        msg = QLabel(f"{message}")
+        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+        #self.textEdit.append(f"{message}")
         print(data)
 
     def send_image(self):
@@ -143,11 +153,20 @@ class Chat_Widget(QMainWindow):
         image_data = base64.b64decode(message_data['image_data'])
         pixmap = QtGui.QPixmap.fromImage(QImage.fromData(image_data))
         scaled_pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
-        self.image_label.setPixmap(scaled_pixmap)
+        image_label = QLabel()
+        image_label.setPixmap(scaled_pixmap)
+        msg = QLabel(f"{message_data}")
+        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+        self.message_history.addWidget(image_label, alignment=Qt.AlignmentFlag.AlignTop)
+
 
     def mouseDoubleClickEvent(self, event):
         self.setWindowTitle("Chat")
         self.setMinimumSize(QSize(600, 600))
+        self.layout = self.initLayout()
+        centralWidget = QWidget()
+        centralWidget.setLayout(self.layout)
+        self.setCentralWidget(centralWidget)
         self.show()
 
 
