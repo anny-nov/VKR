@@ -10,5 +10,6 @@ class Computer:
     disks: list
     ram: int
     used: int
+    OS: str
 
 

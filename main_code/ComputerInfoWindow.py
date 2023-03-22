@@ -15,9 +15,15 @@ from QRCodeDialog import QRCodeDialog
 from computer import Computer
 import requests
 from QTChat_copy import Chat_Widget
+from main_code import menu
 
-API_KEY = 'UzOzYa52ecw83hHju4y-OQ'
+API_KEY = ''
 
+def fill_api_key():
+    key_file = open('../api_key', 'r+')
+    key = str(key_file.read())
+    global API_KEY
+    API_KEY = key
 
 def parse_from_json(hardware_id):
     api_url = 'http://46.151.30.76:5000/api/computer?hardware_id=' + hardware_id + '&api_key=' + API_KEY
@@ -30,6 +36,7 @@ def parse_from_json(hardware_id):
 class ComputerInfoWindow(QMainWindow):
     def __init__(self, hardware_id, parent=None):
         super().__init__(parent)
+        fill_api_key()
         self.comp_info = parse_from_json(hardware_id)
         self.initUI()
         self._createMenuBar()
@@ -45,6 +52,7 @@ class ComputerInfoWindow(QMainWindow):
         ComputerName.setFont(font)
         ComputerId = QLabel('Hardware ID: ' + self.comp_info.hardware_id)
         CpuInfo = QLabel('CPU: ' + self.comp_info.cpu)
+        OSInfo = QLabel('OS: ' + self.comp_info.OS)
         DisksHeader = QLabel('Hard disks: ')
         Gpusheader = QLabel('GPUs: ')
         ChartsHeader = QLabel('Metriks of computer')
@@ -73,14 +81,14 @@ class ComputerInfoWindow(QMainWindow):
         self.grid.addLayout(chat, 6, 0, 5, 2)
         self.grid.addWidget(ComputerName, 0, 3, 1, 2)
         self.grid.addWidget(ComputerId, 1, 3, 1, 2)
-        self.grid.addWidget(CpuInfo, 2, 3, 1, 2)
-        self.grid.addWidget(DisksHeader, 3, 3, 1, 2)
-        self.grid.addWidget(disks_list, 4, 3, 1, 2)
-        self.grid.addWidget(Gpusheader, 5, 3, 1, 2)
-        self.grid.addWidget(gpus_list, 6, 3, 1, 2)
-        self.grid.addWidget(ChartsHeader, 7, 3, 1, 2)
-        self.grid.addWidget(temp_chart, 8, 3, 1, 2)
-        print(self.grid.itemAtPosition(3,3))
+        self.grid.addWidget(OSInfo, 2, 3, 1, 2)
+        self.grid.addWidget(CpuInfo, 3, 3, 1, 2)
+        self.grid.addWidget(DisksHeader, 4, 3, 1, 2)
+        self.grid.addWidget(disks_list, 5, 3, 1, 2)
+        self.grid.addWidget(Gpusheader, 6, 3, 1, 2)
+        self.grid.addWidget(gpus_list, 7, 3, 1, 2)
+        self.grid.addWidget(ChartsHeader, 8, 3, 1, 2)
+        self.grid.addWidget(temp_chart, 9, 3, 1, 2)
 
         view = QWidget(self)
         self.setCentralWidget(view)
@@ -95,32 +103,16 @@ class ComputerInfoWindow(QMainWindow):
 
         NewMobileAPIAction = QAction('New mobile API key', self)
         NewMobileAPIAction.setStatusTip('Release new API key to connect mobile app')
-        NewMobileAPIAction.triggered.connect(self.generateAPIKey)
+        NewMobileAPIAction.triggered.connect(menu.new_APIKey)
         mamangement_menu.addAction(NewMobileAPIAction)
 
         DeactivateAction = QAction('Deactivate computer', self)
         DeactivateAction.setStatusTip('No information will be collected but all logs will be saved')
-        DeactivateAction.triggered.connect(self.DeactivateComputer)
+        DeactivateAction.triggered.connect(menu.DeactivateComputer)
         actions_menu.addAction(DeactivateAction)
 
         DeleteAction = QAction('Delete computer', self)
         DeleteAction.setStatusTip('Completely delete information about computer from database')
-        DeleteAction.triggered.connect(self.DeleteComputer)
+        print(self)
+        #DeleteAction.triggered.connect(menu.DeleteComputer(self, self.comp_info.hardware_id))
         actions_menu.addAction(DeleteAction)
-
-    def DeactivateComputer(self):
-        pass
-
-    def DeleteComputer(self):
-        api_url = 'http://46.151.30.76:5000/api/computer?hardware_id=' + self.comp_info.hardware_id
-        requests.delete(api_url, params=self.comp_info.hardware_id)
-        self.close()
-
-    def generateAPIKey(self):
-        dlg = APIKeyDialogWindow(self)
-        dlg.setWindowTitle("New API Key Creation")
-        if dlg.exec():
-            dlg_qr = QRCodeDialog(self)
-            dlg_qr.setWindowTitle("QRCode")
-            if dlg_qr.exec():
-                os.remove('api_key_qr.png')

@@ -2,7 +2,7 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 
-from CimputerInfoWindow import ComputerInfoWindow
+from ComputerInfoWindow import ComputerInfoWindow
 
 
 class QCustomQWidget(QWidget):
@@ -29,11 +29,12 @@ class QCustomQWidget(QWidget):
     def setComputerName(self, text):
         self.ComputerName.setText(text)
 
-    def setComputerStatus(self, text):
-        self.ComputerStatus.setText(text)
-        if (text == 'Active'):
+    def setComputerStatus(self, status):
+        if status == 1:
+            self.ComputerStatus.setText('Active')
             self.ComputerStatus.setStyleSheet('color: rgb(3, 192, 60);')
         else:
+            self.ComputerStatus.setText('Inactive')
             self.ComputerStatus.setStyleSheet('color: rgb(255, 0, 0);')
 
     def setIcon(self):
@@ -44,5 +45,6 @@ class QCustomQWidget(QWidget):
 
     def clicked(self):
         sender = self.sender()
+        print(sender.objectName())
         self.window = ComputerInfoWindow(sender.objectName())
         self.window.show()

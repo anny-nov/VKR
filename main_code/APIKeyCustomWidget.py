@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 
+from KeyInfoWindow import KeyInfoWindow
+
 
 class QKeyCustomQWidget(QWidget):
     def __init__(self, parent=None):
@@ -31,6 +33,7 @@ class QKeyCustomQWidget(QWidget):
 
     def clicked(self):
         pass
-        #sender = self.sender()
-        #self.window = ComputerInfoWindow(sender.objectName())
-        #self.window.show()
+        sender = self.sender()
+        print(sender.objectName())
+        self.window = KeyInfoWindow(sender.objectName())
+        self.window.show()

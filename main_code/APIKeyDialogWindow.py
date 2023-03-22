@@ -4,7 +4,15 @@ import requests
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel, QGridLayout, QLineEdit, QCheckBox, QComboBox
 import qrcode
 
-API_KEY = 'UzOzYa52ecw83hHju4y-OQ'
+from APIKey import APIKey
+
+API_KEY = ''
+
+def fill_api_key():
+    key_file = open('../api_key', 'r+')
+    key = str(key_file.read())
+    global API_KEY
+    API_KEY = key
 
 class APIKeyDialogWindow(QDialog):
     def __init__(self, parent=None):
@@ -77,9 +85,8 @@ class APIKeyDialogWindow(QDialog):
         self.name = self.name_input_box.text()
         self.security_descriptor = self.form_descriptor()
         req = self.create_client()
-        print(req)
         filename = "api_key_qr.png"
-        img = qrcode.make(self.name)
+        img = qrcode.make(req.api_key)
         img.save(filename)
         self.accept()
 
@@ -92,8 +99,9 @@ class APIKeyDialogWindow(QDialog):
                             "security_descriptor": self.security_descriptor}
         request = json.dumps(client_json_dict)
         page = requests.post(url, json=request, verify=False)
-        print(page)
-        return page
+        page = page.json()
+        client = APIKey(**page)
+        return client
 
     def type_select(self, text):
         self.type = text

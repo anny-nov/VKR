@@ -17,7 +17,14 @@ from io import BytesIO
 from PIL import Image
 from qtpy import QtWidgets, QtGui, QtCore
 
-API_KEY = 'UzOzYa52ecw83hHju4y-OQ'
+API_KEY = ''
+
+def fill_api_key():
+    key_file = open('../api_key', 'r+')
+    key = str(key_file.read())
+    global API_KEY
+    API_KEY = key
+
 # Create a SocketIO instance and connect to the chat server
 sio = socketio.Client()
 sio.connect('http://46.151.30.76:5000?api_key=test_api_key')

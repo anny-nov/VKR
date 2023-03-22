@@ -16,6 +16,8 @@ from computer import Computer
 from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
 import requests
 
+from main_code import menu
+
 API_KEY = ''
 
 
@@ -40,7 +42,6 @@ def parse_all():
     print(message)
     all_comps_json = requests.get(message)
     list_of_dicts = all_comps_json.json()
-    print(list_of_dicts)
     list_of_dicts = list_of_dicts['computers']
     list_of_comps = list()
     for el in list_of_dicts:
@@ -52,7 +53,6 @@ def parse_all():
 def parse_all_keys():
     all_keys_json = requests.get('http://46.151.30.76:5000/api/clients?api_key=' + API_KEY)
     list_of_dicts = all_keys_json.json()
-    print(list_of_dicts)
     list_of_dicts = list_of_dicts['clients']
     list_of_keys = list()
     for el in list_of_dicts:
@@ -108,10 +108,9 @@ class MainWindow(QMainWindow):
 
     def fillComputerListWidget(self):
         if self.index < len(self.list_of_comps):
-            status = 'Active'
             compLineWidget = QCustomQWidget()
             compLineWidget.setComputerName(str(self.list_of_comps[self.index].name))
-            compLineWidget.setComputerStatus(str(status))
+            compLineWidget.setComputerStatus(self.list_of_comps[self.index].used)
             compLineWidget.setIcon()
             compLineWidget.setButtonName(self.list_of_comps[self.index].hardware_id)
             computersQListWidgetItem = QListWidgetItem(self.computersQListWidget)
@@ -133,7 +132,7 @@ class MainWindow(QMainWindow):
 
         NewMobileAPIAction = QAction('New API key', self)
         NewMobileAPIAction.setStatusTip('Release new API key to connect personal computer, server or mobile phone')
-        NewMobileAPIAction.triggered.connect(self.new_APIKey)
+        NewMobileAPIAction.triggered.connect(menu.new_APIKey)
         mamangement_menu.addAction(NewMobileAPIAction)
 
     def clicked(self, text):
@@ -154,15 +153,6 @@ class MainWindow(QMainWindow):
                 error = QLabel("Something went wrong! Please try to click the button again!")
                 error.setAlignment(Qt.AlignmentFlag.AlignHCenter)
                 self.grid.addWidget(error, 1, 0, 1, 3)
-
-    def new_APIKey(self):
-        dlg = APIKeyDialogWindow(self)
-        dlg.setWindowTitle("New API Key Creation")
-        if dlg.exec():
-            dlg_qr = QRCodeDialog(self)
-            dlg_qr.setWindowTitle("QRCode")
-            if dlg_qr.exec():
-                os.remove('api_key_qr.png')
 
     def CreateAPIKeysListWidget(self):
         self.keysQListWidget = QListWidget()
