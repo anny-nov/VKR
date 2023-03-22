@@ -9,7 +9,8 @@ from PyQt6.QtGui import QImage
 from qtpy import QtWidgets, QtCore, QtGui, uic
 import os
 import socketio
-from PyQt6.QtWidgets import QFileDialog, QGridLayout, QLabel, QWidget, QMainWindow, QVBoxLayout
+from PyQt6.QtWidgets import QFileDialog, QGridLayout, QLabel, QWidget, QMainWindow, QVBoxLayout, QListWidget, \
+    QListWidgetItem
 
 import os
 import base64
@@ -26,17 +27,14 @@ def fill_api_key():
     API_KEY = key
 
 # Create a SocketIO instance and connect to the chat server
-sio = socketio.Client()
-sio.connect('http://46.151.30.76:5000?api_key=' + API_KEY)
 
 
 class Chat_Widget(QMainWindow):
     def __init__(self):
         super().__init__()
-<<<<<<< Updated upstream:main_code/QTChat_copy.py
-=======
-
->>>>>>> Stashed changes:code/QTChat_copy.py
+        fill_api_key()
+        self.sio = socketio.Client()
+        self.sio.connect('http://46.151.30.76:5000?api_key=' + API_KEY)
 
     def initLayout(self):
         chat_layout = QGridLayout()
@@ -44,7 +42,14 @@ class Chat_Widget(QMainWindow):
 
         #self.textEdit = QtWidgets.QTextEdit(self)
         #self.textEdit.setReadOnly(True)
-        self.message_history = QVBoxLayout()
+        self.message_history_widget=QWidget(self)
+        self.message_history_widget.setStyleSheet("background-color:white;")
+        self.message_history_widget.setMinimumSize(100, 200)
+        layout = QVBoxLayout()
+        self.message_history_widget.setLayout(layout)
+        self.message_history = QListWidget(self.message_history_widget)
+        self.message_history.setWordWrap(True)
+        self.message_history_widget.layout().addWidget(self.message_history)
 
         self.lineEdit = QtWidgets.QLineEdit(self)
 
@@ -56,15 +61,16 @@ class Chat_Widget(QMainWindow):
 
         self.pushButton.clicked.connect(self.send_message)
         self.send_file_button.clicked.connect(self.send_file)
-        sio.on('my_response', self.receive_message)
-        sio.on('my_response1', self.exe_status)
+        self.sio.on('my_response', self.receive_message)
+        self.sio.on('my_response1', self.exe_status)
 
         self.image_button = QtWidgets.QPushButton(self)
         self.image_button.setText("Send Image")
         self.image_button.clicked.connect(self.send_image)
-        sio.on('my_response1', self.receive_image)
+        self.sio.on('my_response1', self.receive_image)
 
-        chat_layout.addLayout(self.message_history, 0, 0, 1, 2)
+        chat_layout.setColumnStretch(0, 10)
+        chat_layout.addWidget(self.message_history_widget, 0, 0, 1, 2)
         chat_layout.addWidget(self.lineEdit, 1, 0, 1, 1)
         chat_layout.addWidget(self.pushButton, 1, 1, 1, 1)
         chat_layout.addWidget(self.image_button, 2, 1, 1, 1)
@@ -80,7 +86,7 @@ class Chat_Widget(QMainWindow):
             # read file data and send it over SocketIO
             with open(file_path, 'rb') as f:
                 data = f.read()
-                sio.emit('my_event', data)
+                self.sio.emit('my_event', data)
 
             # send status message to chat window
             json_message = {
@@ -88,7 +94,7 @@ class Chat_Widget(QMainWindow):
                 'message': f"Sent file: {file_path}",
                 'time': datetime.datetime.now().strftime("%D  %H:%M:%S"),
             }
-            sio.emit('my_event', json_message)
+            self.sio.emit('my_event', json_message)
         else:
             # send status message to chat window
             json_message = {
@@ -96,7 +102,7 @@ class Chat_Widget(QMainWindow):
                 'message': 'File selection canceled',
                 'time': datetime.datetime.now().strftime("%D  %H:%M:%S"),
             }
-            sio.emit('my_event', json_message)
+            self.sio.emit('my_event', json_message)
 
     def send_message(self):
         # Read the message from the QLineEdit widget
@@ -109,12 +115,14 @@ class Chat_Widget(QMainWindow):
                 'message': message,
                 'time': datetime.datetime.now().strftime("%D  %H:%M:%S"),
             }
-            sio.emit('my_event', json_message)
+            self.sio.emit('my_event', json_message)
 
             # Clear the QLineEdit widget
             self.lineEdit.setText("")
             msg = QLabel(f"{json_message['from']} ({json_message['time']}):       {json_message['message']}")
-            self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+            msg.setMaximumWidth(self.message_history_widget.width())
+            msg.setWordWrap(True)
+            self.message_history.addItem(f"{json_message['from']} ({json_message['time']}):       {json_message['message']}")
             #self.textEdit.append(msg)
 
     def receive_message(self, data):
@@ -125,7 +133,8 @@ class Chat_Widget(QMainWindow):
         message = message_data['message']
         time = message_data['time']
         msg = QLabel(f"{sender} ({time}):       {message}")
-        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+        list_item = QListWidgetItem(msg)
+        self.message_history.addItem(list_item)
         #self.textEdit.append(f"{sender} ({time}):       {message}")
         print(data)
 
@@ -134,7 +143,8 @@ class Chat_Widget(QMainWindow):
         message_data = data['data']
         message = message_data['message']
         msg = QLabel(f"{message}")
-        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
+        list_item = QListWidgetItem(msg)
+        self.message_history.addItem(list_item)
         #self.textEdit.append(f"{message}")
         print(data)
 
@@ -145,7 +155,7 @@ class Chat_Widget(QMainWindow):
         if filename:
             with open(filename, 'rb') as f:
                 image_data = f.read()
-            sio.emit('my_event', {'username': "Dima", 'image_data': base64.b64encode(image_data).decode()})
+            self.sio.emit('my_event', {'username': "Dima", 'image_data': base64.b64encode(image_data).decode()})
 
     def receive_image(self, data):
         # Receive an image from the server and display it in the chat box
@@ -156,8 +166,10 @@ class Chat_Widget(QMainWindow):
         image_label = QLabel()
         image_label.setPixmap(scaled_pixmap)
         msg = QLabel(f"{message_data}")
-        self.message_history.addWidget(msg, alignment=Qt.AlignmentFlag.AlignTop)
-        self.message_history.addWidget(image_label, alignment=Qt.AlignmentFlag.AlignTop)
+        list_item = QListWidgetItem(msg)
+        self.message_history.addItem(list_item)
+        list_item = QListWidgetItem(image_label)
+        self.message_history.addItem(list_item)
 
 
     def mouseDoubleClickEvent(self, event):

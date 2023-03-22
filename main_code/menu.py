@@ -22,10 +22,11 @@ def new_APIKey(self):
         if dlg_qr.exec():
             os.remove('api_key_qr.png')
 
-def DeactivateComputer(self):
-    pass
 
 def DeleteComputer(self, hardware_id):
+    fill_api_key()
     api_url = 'http://46.151.30.76:5000/api/computer?hardware_id=' + hardware_id + '&api_key=' + API_KEY
-    requests.delete(api_url, params=hardware_id)
+    print(api_url)
+    req = requests.delete(api_url, params=hardware_id)
+    print(req)
     self.close()

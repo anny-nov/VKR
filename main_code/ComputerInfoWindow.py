@@ -108,13 +108,7 @@ class ComputerInfoWindow(QMainWindow):
         NewMobileAPIAction.triggered.connect(menu.new_APIKey)
         mamangement_menu.addAction(NewMobileAPIAction)
 
-        DeactivateAction = QAction('Deactivate computer', self)
-        DeactivateAction.setStatusTip('No information will be collected but all logs will be saved')
-        DeactivateAction.triggered.connect(menu.DeactivateComputer)
-        actions_menu.addAction(DeactivateAction)
-
         DeleteAction = QAction('Delete computer', self)
         DeleteAction.setStatusTip('Completely delete information about computer from database')
-        print(self)
-        #DeleteAction.triggered.connect(menu.DeleteComputer(self, self.comp_info.hardware_id))
+        DeleteAction.triggered.connect(lambda: menu.DeleteComputer(self, self.comp_info.hardware_id))
         actions_menu.addAction(DeleteAction)
