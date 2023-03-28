@@ -30,3 +30,17 @@ def DeleteComputer(self, hardware_id):
     req = requests.delete(api_url, params=hardware_id)
     print(req)
     self.close()
+
+
+def DeleteAPIKey(self, key_id):
+    print('hey')
+    fill_api_key()
+    api_url = 'http://46.151.30.76:5000/api/client?id=' + str(key_id) + '&api_key=' + API_KEY
+    print('url: ' + api_url)
+    req = requests.delete(api_url, params=key_id)
+    print(req)
+    self.close()
+
+
+def ChangeAPIKey(self, key):
+    pass

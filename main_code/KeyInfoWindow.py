@@ -16,6 +16,7 @@ from computer import Computer
 import requests
 
 from main_code import menu
+from main_code.APIKey import APIKey
 
 API_KEY = ''
 
@@ -26,17 +27,18 @@ def fill_api_key():
     global API_KEY
     API_KEY = key
 
-def parse_from_json(hardware_id):
-    api_url = 'http://46.151.30.76:5000/api/client?hardware_id=' + hardware_id + '&api_key=' + API_KEY
+def parse_from_json(id):
+    api_url = 'http://46.151.30.76:5000/api/client?id=' + id + '&api_key=' + API_KEY
     comp_json = requests.get(api_url)
     comp_dict = comp_json.json()
-    comp_info = Computer(**comp_dict)
+    comp_info = APIKey(**comp_dict)
     return comp_info
 
 
 class KeyInfoWindow(QMainWindow):
     def __init__(self, id, parent=None):
         super().__init__(parent)
+        fill_api_key()
         self.key_info = parse_from_json(id)
         self.initUI()
         self._createMenuBar()
@@ -56,18 +58,7 @@ class KeyInfoWindow(QMainWindow):
         NewMobileAPIAction.triggered.connect(menu.new_APIKey)
         mamangement_menu.addAction(NewMobileAPIAction)
 
-        DeactivateAction = QAction('Deactivate computer', self)
-        DeactivateAction.setStatusTip('No information will be collected but all logs will be saved')
-        DeactivateAction.triggered.connect(self.DeleteAPIKey)
-        actions_menu.addAction(DeactivateAction)
-
-        DeleteAction = QAction('Delete computer', self)
-        DeleteAction.setStatusTip('Completely delete information about computer from database')
-        DeleteAction.triggered.connect(self.ChangeAPIKey)
+        DeleteAction = QAction('Delete API Key', self)
+        DeleteAction.setStatusTip('Completely delete information about client from database')
+        DeleteAction.triggered.connect(lambda: menu.DeleteAPIKey(self, self.key_info.id))
         actions_menu.addAction(DeleteAction)
-
-    def DeleteAPIKey(self):
-        pass
-
-    def ChangeAPIKey(self):
-        pass
