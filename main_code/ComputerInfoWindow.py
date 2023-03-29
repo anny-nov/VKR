@@ -16,6 +16,8 @@ from computer import Computer
 import requests
 from QTChat_copy import Chat_Widget
 from main_code import menu
+from main_code.Log import Log
+from main_code.LogCustomWidget import LogCustomQWidget
 
 API_KEY = ''
 
@@ -32,14 +34,29 @@ def parse_from_json(hardware_id):
     comp_info = Computer(**comp_dict)
     return comp_info
 
+def parse_log(hardware_id):
+    api_url = 'http://afire.tech:5000/api/log?hardware_id=' + hardware_id + '&api_key=' + API_KEY
+    log_list_json = requests.get(api_url)
+    log_list_dict = log_list_json.json()
+    log_list_dict = log_list_dict['logs']
+    log_list = list()
+    for el in log_list_dict:
+        tmp = Log(**el)
+        tmp.parse_data()
+        tmp.parse_time()
+        log_list.append(tmp)
+    return log_list
+
 
 class ComputerInfoWindow(QMainWindow):
     def __init__(self, hardware_id, parent=None):
         super().__init__(parent)
         fill_api_key()
         self.comp_info = parse_from_json(hardware_id)
+        self.logs = parse_log(hardware_id)
         self.initUI()
         self._createMenuBar()
+        self.index = 0
 
     def initUI(self):
         self.setWindowTitle("Detailed information about computer")
@@ -112,3 +129,25 @@ class ComputerInfoWindow(QMainWindow):
         DeleteAction.setStatusTip('Completely delete information about computer from database')
         DeleteAction.triggered.connect(lambda: menu.DeleteComputer(self, self.comp_info.hardware_id))
         actions_menu.addAction(DeleteAction)
+
+    def CreateLogListWidget(self):
+        self.keysQListWidget = QListWidget()
+        self.logs = parse_log(self.comp_info.hardware_id)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.fillLogListWidget)
+        self.timer.start(50)
+
+    def fillLogListWidget(self):
+        if self.index < len(self.logs):
+            LogLineWidget = LogCustomQWidget()
+            LogLineWidget.setText(str(self.logs[self.index].data))
+            LogLineWidget.setKeyType(str(self.list_of_keys[self.index].type))
+            LogLineWidget.setButtonName(self.list_of_keys[self.index].id)
+            keysQListWidgetItem = QListWidgetItem(self.keysQListWidget)
+            keysQListWidgetItem.setSizeHint(LogLineWidget.sizeHint())
+            self.keysQListWidget.addItem(keysQListWidgetItem)
+            self.keysQListWidget.setItemWidget(keysQListWidgetItem, LogLineWidget)
+            self.index += 1
+        if self.index >= len(self.list_of_keys):
+            self.timer.stop()
+            self.index = 0
