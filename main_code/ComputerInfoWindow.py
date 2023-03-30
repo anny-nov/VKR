@@ -54,6 +54,7 @@ class ComputerInfoWindow(QMainWindow):
         fill_api_key()
         self.comp_info = parse_from_json(hardware_id)
         self.logs = parse_log(hardware_id)
+        print(self.logs)
         self.initUI()
         self._createMenuBar()
         self.index = 0
@@ -92,11 +93,12 @@ class ComputerInfoWindow(QMainWindow):
         #temp_chat = QLabel('There will be chat soon')
         chat_class = Chat_Widget()
         chat = chat_class.initLayout()
-        temp_logs = QLabel('There will be logs soon')
+        #temp_logs = QLabel('There will be logs soon')
+        self.CreateLogListWidget()
         temp_chart = QLabel('There will be charts soon')
 
 
-        self.grid.addWidget(temp_logs, 0, 0, 5, 2)
+        self.grid.addWidget(self.logListWidget, 0, 0, 5, 2)
         self.grid.addLayout(chat, 6, 0, 5, 2)
         self.grid.addWidget(ComputerName, 0, 3, 1, 2)
         self.grid.addWidget(ComputerId, 1, 3, 1, 2)
@@ -131,7 +133,7 @@ class ComputerInfoWindow(QMainWindow):
         actions_menu.addAction(DeleteAction)
 
     def CreateLogListWidget(self):
-        self.keysQListWidget = QListWidget()
+        self.logListWidget = QListWidget()
         self.logs = parse_log(self.comp_info.hardware_id)
         self.timer = QTimer()
         self.timer.timeout.connect(self.fillLogListWidget)
@@ -141,13 +143,13 @@ class ComputerInfoWindow(QMainWindow):
         if self.index < len(self.logs):
             LogLineWidget = LogCustomQWidget()
             LogLineWidget.setText(str(self.logs[self.index].data))
-            LogLineWidget.setKeyType(str(self.list_of_keys[self.index].type))
-            LogLineWidget.setButtonName(self.list_of_keys[self.index].id)
-            keysQListWidgetItem = QListWidgetItem(self.keysQListWidget)
-            keysQListWidgetItem.setSizeHint(LogLineWidget.sizeHint())
-            self.keysQListWidget.addItem(keysQListWidgetItem)
-            self.keysQListWidget.setItemWidget(keysQListWidgetItem, LogLineWidget)
+            LogLineWidget.setTime(str(self.logs[self.index].datetime))
+            LogLineWidget.setIcon(self.list_of_keys[self.index].id)
+            logListWidgetItem = QListWidgetItem(self.logListWidget)
+            logListWidgetItem.setSizeHint(LogLineWidget.sizeHint())
+            self.logListWidget.addItem(logListWidgetItem)
+            self.logListWidget.setItemWidget(logListWidgetItem, LogLineWidget)
             self.index += 1
-        if self.index >= len(self.list_of_keys):
+        if self.index >= len(self.logs):
             self.timer.stop()
             self.index = 0
