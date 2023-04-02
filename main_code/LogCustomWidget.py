@@ -12,15 +12,20 @@ class LogCustomQWidget(QWidget):
         self.log_text = QLabel()
         self.time_label = QLabel()
         self.icon = QLabel()
+        self.id = 0
         textQVBox.addWidget(self.log_text)
         textQVBox.addWidget(self.time_label)
 
         self.allQHBoxLayout = QHBoxLayout()
-        self.log_text.mouseDoubleClickEvent(self.clicked)
         self.icon.setFixedSize(25, 25)
         self.allQHBoxLayout.addLayout(textQVBox, 1)
         self.allQHBoxLayout.addWidget(self.icon, 0)
         self.setLayout(self.allQHBoxLayout)
+
+    def mouseDoubleClickEvent(self, event):
+        self.window = LogInfo(self.id)
+        self.window.show()
+
 
     def setText(self, text):
         self.log_text.setText(text)
@@ -32,9 +37,5 @@ class LogCustomQWidget(QWidget):
         self.time_label.setText(text)
         font = QFont()
 
-    def clicked(self):
-        pass
-        sender = self.sender()
-        print(sender.objectName())
-        self.window = LogInfo(sender.objectName())
-        self.window.show()
+    def setId(self, integer):
+        self.id = integer
