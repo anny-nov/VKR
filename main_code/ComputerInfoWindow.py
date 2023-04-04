@@ -194,6 +194,7 @@ class ComputerInfoWindow(QMainWindow):
                 LogLineWidget.setTime(str(self.logs[self.index].datetime))
                 LogLineWidget.setIcon(self.logs[self.index].type)
                 LogLineWidget.setId(self.logs[self.index].id)
+                LogLineWidget.setHardwareId(self.logs[self.index].hardware_id)
                 logListWidgetItem = QListWidgetItem(self.logListWidget)
                 logListWidgetItem.setSizeHint(LogLineWidget.sizeHint())
                 self.logListWidget.addItem(logListWidgetItem)
