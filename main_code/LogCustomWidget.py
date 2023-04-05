@@ -24,6 +24,7 @@ class LogCustomQWidget(QWidget):
         self.setLayout(self.allQHBoxLayout)
 
     def mouseDoubleClickEvent(self, event):
+        print(self.id)
         self.window = LogInfo(self.id, self.hardware_id)
         self.window.show()
 

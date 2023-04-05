@@ -1,13 +1,13 @@
 from datetime import datetime
 
-from PyQt6.QtCore import QSize, Qt, QTimer
-from PyQt6.QtWidgets import QApplication, \
+from PyQt6.QtCore import QSize, QTimer
+from PyQt6.QtWidgets import \
     QMainWindow, \
     QPushButton, \
     QWidget, \
     QLabel, \
     QListWidget, QListWidgetItem, QMenu, QGridLayout, QDateEdit, QHBoxLayout, QComboBox, QMessageBox
-from PyQt6.QtGui import QPixmap, QAction, QFont
+from PyQt6.QtGui import QAction, QFont
 
 from computer import Computer
 import requests
