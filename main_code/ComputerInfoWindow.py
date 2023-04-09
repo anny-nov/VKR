@@ -13,6 +13,7 @@ from computer import Computer
 import requests
 from QTChat_copy import Chat_Widget
 from main_code import menu
+from main_code.Chart import Chart
 from main_code.Log import Log
 from main_code.LogCustomWidget import LogCustomQWidget
 
@@ -142,6 +143,8 @@ class ComputerInfoWindow(QMainWindow):
         self.CreateLogListWidget()
 
         temp_chart = QLabel('There will be charts soon')
+        charts = Chart(self.comp_info.hardware_id, 1673211600, 1680987600)
+        charts.get_gata()
 
         self.grid.addWidget(self.logListWidget, 0, 0, 6, 2)
         self.grid.addLayout(time_layout, 6, 0, 1, 2)

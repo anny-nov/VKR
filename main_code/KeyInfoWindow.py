@@ -1,5 +1,6 @@
 import os
 
+import qrcode
 from PyQt6.QtCore import QSize, Qt, QTimer
 from PyQt6.QtWidgets import QApplication, \
     QMainWindow, \
@@ -49,7 +50,8 @@ class KeyInfoWindow(QMainWindow):
         header_font = QFont()
         header_font.setPointSize(16)
         header_font.bold()
-        qr_button = QPushButton('Show QR')
+        self.qr_button = QPushButton('Show QR')
+        self.qr_button.clicked.connect(self.show_qr)
         self.settings_button = QPushButton('Change Settings')
         self.settings_button.clicked.connect(self.choose_settings)
         self.confirm_button = QPushButton('Confirm')
@@ -119,7 +121,7 @@ class KeyInfoWindow(QMainWindow):
         self.layout.addWidget(client_id, 1, 0)
         self.layout.addWidget(client_type, 2, 0)
         self.layout.addWidget(api_key, 3, 0)
-        self.layout.addWidget(qr_button, 3, 1)
+        self.layout.addWidget(self.qr_button, 3, 1)
         self.layout.addWidget(security_header, 6, 0)
         self.layout.addWidget(self.settings_button, 6, 1)
         self.layout.addLayout(checkbox_layout, 7, 0, 1, 2)
@@ -146,9 +148,61 @@ class KeyInfoWindow(QMainWindow):
         actions_menu.addAction(DeleteAction)
 
     def choose_settings(self):
-        self.layout.removeItem(self.settings_button)
+        self.confirm_button = QPushButton('Confirm')
+        self.confirm_button.clicked.connect(self.confirmed)
+        self.settings_button.deleteLater()
         self.layout.addWidget(self.confirm_button, 6, 1)
+        self.layout.update()
+
+        self.comp_read.setDisabled(False)
+        self.comp_add.setDisabled(False)
+        self.comp_delete.setDisabled(False)
+        self.comp_update.setDisabled(False)
+
+        self.client_read.setDisabled(False)
+        self.client_update.setDisabled(False)
+        self.client_add.setDisabled(False)
+        self.client_delete.setDisabled(False)
+
+        self.log_read.setDisabled(False)
+        self.log_update.setDisabled(False)
+        self.log_add.setDisabled(False)
+        self.log_delete.setDisabled(False)
+
 
     def confirmed(self):
-        self.layout.removeItem(self.confirm_button)
+        self.settings_button = QPushButton('Change Settings')
+        self.settings_button.clicked.connect(self.choose_settings)
+        self.confirm_button.deleteLater()
         self.layout.addWidget(self.settings_button, 6, 1)
+        self.layout.update()
+
+        self.comp_read.setDisabled(True)
+        self.comp_add.setDisabled(True)
+        self.comp_delete.setDisabled(True)
+        self.comp_update.setDisabled(True)
+
+        self.client_read.setDisabled(True)
+        self.client_update.setDisabled(True)
+        self.client_add.setDisabled(True)
+        self.client_delete.setDisabled(True)
+
+        self.log_read.setDisabled(True)
+        self.log_update.setDisabled(True)
+        self.log_add.setDisabled(True)
+        self.log_delete.setDisabled(True)
+
+        self.update_info()
+
+    def update_info(self):
+        pass
+
+    def show_qr(self):
+        filename = "api_key_qr.png"
+        img = qrcode.make(self.key_info.api_key)
+        img.save(filename)
+        dlg_qr = QRCodeDialog(self)
+        dlg_qr.setWindowTitle("QRCode")
+        if dlg_qr.exec():
+            os.remove('api_key_qr.png')
+

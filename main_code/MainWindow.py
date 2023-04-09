@@ -17,25 +17,9 @@ from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
 import requests
 
 from main_code import menu
+from Access import check_api_key, get_api_key
 
 API_KEY = ''
-
-
-def check_api_key():
-    key_file = open('../api_key', 'r+')
-    key = str(key_file.read())
-    if len(key) == 0:
-        dlg = FirstAPIKeyDialogWindow()
-        dlg.setWindowTitle("First log in")
-        dlg.exec()
-    fill_api_key()
-
-def fill_api_key():
-    key_file = open('../api_key', 'r+')
-    key = str(key_file.read())
-    global API_KEY
-    API_KEY = key
-
 
 def parse_all():
     message = 'http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY
@@ -63,7 +47,9 @@ def parse_all_keys():
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        check_api_key()
+        global API_KEY
+        API_KEY = get_api_key()
+        #check_api_key()
         self.index = 0
         self._createMenuBar()
         self.initUI()

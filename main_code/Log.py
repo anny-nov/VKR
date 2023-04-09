@@ -13,3 +13,10 @@ class Log:
 
     def parse_time(self):
         self.datetime = datetime.datetime.fromtimestamp(self.timestamp)
+
+    def get_load(self):
+        self.cpu = str(self.data['cpu'])
+        self.cpu = float(self.cpu.replace('%', ''))
+        self.ram = str(self.data['ram'])
+        self.ram = int(self.ram.replace('MB', ''))
+        print('ram ', self.ram, 'cpu ', self.cpu)

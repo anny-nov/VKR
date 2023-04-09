@@ -1,22 +1,13 @@
-from PIL.ImageQt import ImageQt
-from PyQt6 import QtCore, QtGui
 import datetime
-import ctypes
-import time
 
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QImage
-from qtpy import QtWidgets, QtCore, QtGui, uic
-import os
 import socketio
 from PyQt6.QtWidgets import QFileDialog, QGridLayout, QLabel, QWidget, QMainWindow, QVBoxLayout, QListWidget, \
     QListWidgetItem
 
-import os
 import base64
-from io import BytesIO
-from PIL import Image
-from qtpy import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 
 API_KEY = ''
 
