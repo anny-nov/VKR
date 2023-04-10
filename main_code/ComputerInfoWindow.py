@@ -145,6 +145,7 @@ class ComputerInfoWindow(QMainWindow):
         temp_chart = QLabel('There will be charts soon')
         charts = Chart(self.comp_info.hardware_id, 1673211600, 1680987600)
         charts.get_gata()
+        cpu_chart = charts.draw_cpu_chart()
 
         self.grid.addWidget(self.logListWidget, 0, 0, 6, 2)
         self.grid.addLayout(time_layout, 6, 0, 1, 2)
@@ -158,7 +159,7 @@ class ComputerInfoWindow(QMainWindow):
         self.grid.addWidget(Gpusheader, 6, 3, 1, 2)
         self.grid.addWidget(gpus_list, 7, 3, 1, 2)
         self.grid.addWidget(ChartsHeader, 8, 3, 1, 2)
-        self.grid.addWidget(temp_chart, 9, 3, 1, 2)
+        self.grid.addWidget(cpu_chart, 9, 3, 1, 2)
 
         view = QWidget(self)
         self.setCentralWidget(view)
