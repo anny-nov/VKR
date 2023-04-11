@@ -11,27 +11,29 @@ API_KEY = ''
 
 class TimeAxisItem(pg.AxisItem):
     def tickStrings(self, values, scale, spacing):
-        return [datetime.fromtimestamp(value) for value in values]
+        return [str(datetime.fromtimestamp(value)) for value in values]
 
 class Chart():
-    def __init__(self, hardware_id, start=0, finish=0):
+    def __init__(self, hardware_id, ram, start=0, finish=0):
         if start == 0:
-            self.start = datetime(datetime.today())
-            self.start = datetime.timestamp(self.start)
+            print(datetime.today())
+            self.start = int(datetime.timestamp(datetime.today()))
         else:
             self.start = start
         if finish == 0:
-            self.finish = datetime.now()
-            self.start = datetime.timestamp(self.start)
+            print(datetime.now())
+            self.finish = int(datetime.timestamp(datetime.now()))
         else:
             self.finish = finish
         self.hardware_id = hardware_id
+        self.max_ram = ram
 
     def get_gata(self):
         global API_KEY
         API_KEY = get_api_key()
         api_url = 'http://afire.tech:5000/api/log?hardware_id=' + self.hardware_id + '&from=' + str(
             self.start) + '&to=' + str(self.finish) + '&type=1&api_key=' + API_KEY
+        print(api_url)
         log_list_json = requests.get(api_url)
         log_list_dict = log_list_json.json()
         log_list_dict = log_list_dict['logs']
@@ -56,14 +58,23 @@ class Chart():
         pen = pg.mkPen(color=(255, 0, 0), width=2)
         self.cpu_plot_widget.plot(
             x=[x.timestamp() for x in self.times],
-            y=self.cpus, pen=pen, symbol='o'
+            y=self.cpus, pen=pen
         )
+        self.cpu_plot_widget.setBackground('w')
+        self.cpu_plot_widget.setYRange(0, 1)
         return self.cpu_plot_widget
-        #fig = plt.figure()
-        #time_data_float = matplotlib.dates.date2num(self.times)
-        #pylab.plot_date(time_data_float, self.cpus, fmt="b-")
-        #axes = pylab.subplot(1, 1, 1)
-        #axes.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%Y-%m-%d %H:%M"))
-        #axes.set_xticklabels(self.times, rotation=45, ha='right')
-        #pylab.grid()
-        #pylab.show()
+
+    def draw_ram_chart(self):
+        self.date_axis = TimeAxisItem(orientation='bottom')
+        self.ram_plot_widget = pg.PlotWidget(
+            axisItems={'bottom': self.date_axis},
+            title='<h2>RAM Load</h2>'
+        )
+        pen = pg.mkPen(color=(255, 0, 0), width=2)
+        self.ram_plot_widget.plot(
+            x=[x.timestamp() for x in self.times],
+            y=self.rams, pen=pen
+        )
+        self.ram_plot_widget.setBackground('w')
+        self.ram_plot_widget.setYRange(0, self.max_ram)
+        return self.ram_plot_widget

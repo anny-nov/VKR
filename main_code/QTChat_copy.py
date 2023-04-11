@@ -66,10 +66,9 @@ class Chat_Widget(QMainWindow):
         chat_layout.addWidget(self.pushButton, 1, 1, 1, 1)
         chat_layout.addWidget(self.image_button, 2, 1, 1, 1)
         chat_layout.addWidget(self.send_file_button, 3, 1, 1, 1)
+        chat_layout.setRowStretch(chat_layout.rowCount(), 0)
         return chat_layout
-
     def send_file(self):
-
         # open file explorer dialog and get selected file path
         file_path, _ = QFileDialog.getOpenFileName(None, "Select a file to send", ".", "All files (*)")
 
