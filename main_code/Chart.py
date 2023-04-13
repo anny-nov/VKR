@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 import matplotlib.pyplot as plt
 import requests
@@ -16,12 +16,11 @@ class TimeAxisItem(pg.AxisItem):
 class Chart():
     def __init__(self, hardware_id, ram, start=0, finish=0):
         if start == 0:
-            print(datetime.today())
-            self.start = int(datetime.timestamp(datetime.today()))
+            dt = datetime.combine(date.today(), datetime.min.time())
+            self.start = int(datetime.timestamp(dt))
         else:
             self.start = start
         if finish == 0:
-            print(datetime.now())
             self.finish = int(datetime.timestamp(datetime.now()))
         else:
             self.finish = finish

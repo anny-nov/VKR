@@ -149,9 +149,9 @@ class ComputerInfoWindow(QMainWindow):
         cpu_chart = charts.draw_cpu_chart()
         ram_chart = charts.draw_ram_chart()
 
-        self.grid.addWidget(self.logListWidget, 0, 0, 7, 2)
-        self.grid.addLayout(time_layout, 7, 0, 1, 2)
-        self.grid.addLayout(chat, 8, 0, 6, 2)
+        self.grid.addWidget(self.logListWidget, 6, 0, 7, 2)
+        self.grid.addLayout(time_layout, 13, 0, 1, 2)
+        self.grid.addLayout(chat, 0, 0, 6, 2)
         self.grid.addWidget(ComputerName, 0, 3, 1, 2)
         self.grid.addWidget(ComputerId, 1, 3, 1, 2)
         self.grid.addWidget(OSInfo, 2, 3, 1, 2)
