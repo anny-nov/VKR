@@ -1,6 +1,5 @@
 from datetime import datetime, date
 
-import matplotlib.pyplot as plt
 import requests
 import pyqtgraph as pg
 
@@ -75,5 +74,5 @@ class Chart():
             y=self.rams, pen=pen
         )
         self.ram_plot_widget.setBackground('w')
-        self.ram_plot_widget.setYRange(0, self.max_ram)
+        self.ram_plot_widget.setYRange(0, int(self.max_ram))
         return self.ram_plot_widget
