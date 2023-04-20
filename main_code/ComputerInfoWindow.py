@@ -16,14 +16,15 @@ from main_code import menu
 from main_code.Chart import Chart
 from main_code.Log import Log
 from main_code.LogCustomWidget import LogCustomQWidget
+from key_get import get_dec_key
 
 API_KEY = ''
 
 def fill_api_key():
-    key_file = open('../api_key', 'r+')
-    key = str(key_file.read())
+    #key_file = open('../api_key', 'r+')
+    #key = str(key_file.read())
     global API_KEY
-    API_KEY = key
+    API_KEY = get_dec_key()
 
 def parse_from_json(hardware_id):
     api_url = 'http://46.151.30.76:5000/api/computer?hardware_id=' + hardware_id + '&api_key=' + API_KEY
@@ -143,15 +144,37 @@ class ComputerInfoWindow(QMainWindow):
         self.logs = parse_log(self.comp_info.hardware_id)
         self.CreateLogListWidget()
 
-        #temp_chart = QLabel('There will be charts soon')
-        charts = Chart(self.comp_info.hardware_id, self.comp_info.ram)
-        charts.get_gata()
-        cpu_chart = charts.draw_cpu_chart()
-        ram_chart = charts.draw_ram_chart()
 
-        self.grid.addWidget(self.logListWidget, 6, 0, 7, 2)
-        self.grid.addLayout(time_layout, 13, 0, 1, 2)
-        self.grid.addLayout(chat, 0, 0, 6, 2)
+        self.charts = Chart(self.comp_info.hardware_id, self.comp_info.ram)
+        self.charts.get_gata()
+        self.cpu_chart = self.charts.draw_cpu_chart()
+        self.ram_chart = self.charts.draw_ram_chart()
+        chart_from_label = QLabel('From')
+        chart_from_label.setMaximumSize(50, 20)
+        chart_to_label = QLabel('To')
+        chart_to_label.setMaximumSize(40, 20)
+        self.chart_from_time_widget = QDateEdit()
+        self.chart_to_time_widget = QDateEdit()
+        self.chart_to_time_widget.setDate(datetime.today())
+        self.chart_from_time_widget.setDate(datetime.today())
+        self.chart_to_time_widget.setMaximumDate(datetime.today())
+        self.chart_from_time_widget.setMaximumDate(datetime.today())
+        self.chart_from_time_widget.setMinimumDate(datetime.fromtimestamp(0))
+        self.chart_to_time_widget.setMinimumDate(datetime.fromtimestamp(0))
+        chart_filter_button = QPushButton('Update')
+        chart_filter_button.clicked.connect(self.update_charts)
+
+        chart_time_layout = QHBoxLayout()
+        chart_time_layout.setSpacing(5)
+        chart_time_layout.addWidget(chart_from_label)
+        chart_time_layout.addWidget(self.chart_from_time_widget)
+        chart_time_layout.addWidget(chart_to_label)
+        chart_time_layout.addWidget(self.chart_to_time_widget)
+        chart_time_layout.addWidget(chart_filter_button)
+
+        self.grid.addWidget(self.logListWidget, 11, 0, 9, 2)
+        self.grid.addLayout(time_layout, 20, 0, 1, 2)
+        self.grid.addLayout(chat, 0, 0, 10, 2)
         self.grid.addWidget(ComputerName, 0, 3, 1, 2)
         self.grid.addWidget(ComputerId, 1, 3, 1, 2)
         self.grid.addWidget(OSInfo, 2, 3, 1, 2)
@@ -162,9 +185,10 @@ class ComputerInfoWindow(QMainWindow):
         self.grid.addWidget(Gpusheader, 7, 3, 1, 2)
         self.grid.addWidget(gpus_list, 8, 3, 1, 2)
         self.grid.addWidget(ChartsHeader, 9, 3, 1, 2)
-        self.grid.addWidget(cpu_chart, 10, 3, 1, 2)
-        self.grid.addWidget(ram_chart, 11, 3, 1, 2)
-        self.grid.setRowStretch(self.grid.rowCount(),1)
+        self.grid.addLayout(chart_time_layout, 10, 3, 1, 2)
+        self.grid.addWidget(self.cpu_chart, 11, 3, 4, 2)
+        self.grid.addWidget(self.ram_chart, 16, 3, 4, 2)
+        self.grid.setRowStretch(self.grid.rowCount(), 1)
 
         view = QWidget(self)
         self.setCentralWidget(view)
@@ -213,21 +237,41 @@ class ComputerInfoWindow(QMainWindow):
             self.timer.stop()
             self.index = 0
 
-    def filter(self):
-        to_time = int(datetime.timestamp(self.to_time_widget.dateTime().toPyDateTime()))
-        from_time = int(datetime.timestamp(self.from_time_widget.dateTime().toPyDateTime()))
+    def update_charts(self):
+        to_time = int(datetime.timestamp(self.chart_to_time_widget.dateTime().toPyDateTime()))
+        from_time = int(datetime.timestamp(self.chart_from_time_widget.dateTime().toPyDateTime()))
         if (to_time>=from_time):
-            self.logs = parse_logs_with_filters(self.comp_info.hardware_id, from_time, to_time, self.log_type)
-            self.logListWidget.clear()
-            self.CreateLogListWidget()
-            self.grid.addWidget(self.logListWidget, 0, 0, 6, 2)
+            self.cpu_chart.close()
+            self.ram_chart.close()
+            self.charts = Chart(self.comp_info.hardware_id, self.comp_info.ram, from_time, to_time)
+            self.charts.get_gata()
+            self.cpu_chart = self.charts.draw_cpu_chart()
+            self.ram_chart = self.charts.draw_ram_chart()
+            self.grid.addWidget(self.cpu_chart, 11, 3, 4, 2)
+            self.grid.addWidget(self.ram_chart, 16, 3, 4, 2)
             self.grid.update()
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Filter error")
             msg.setText("Date setting is invalid")
-            msg.setIcon(QMessageBox.Warning)
-            msg.exec_()
+            #msg.setIcon(QMessageBox.warning)
+            msg.exec()
 
     def GetType(self, type):
         self.log_type = type
+
+    def filter(self):
+        to_time = int(datetime.timestamp(self.to_time_widget.dateTime().toPyDateTime()))
+        from_time = int(datetime.timestamp(self.from_time_widget.dateTime().toPyDateTime()))
+        if (to_time >= from_time):
+            self.logs = parse_logs_with_filters(self.comp_info.hardware_id, from_time, to_time, self.log_type)
+            self.logListWidget.clear()
+            self.CreateLogListWidget()
+            self.grid.addWidget(self.logListWidget, 6, 0, 7, 2)
+            self.grid.update()
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Filter error")
+            msg.setText("Date setting is invalid")
+            #msg.setIcon(QMessageBox.Warning)
+            msg.exec()
