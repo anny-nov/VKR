@@ -1,10 +1,8 @@
 import requests
 
 import socketio
-from qtpy import QtWidgets, QtGui, QtCore
-import sys
 import json
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, QObject
 #from PySide6.QtCore import Signal, Slot, QObject, SIGNAL
 from msg_json import deserialize_history
 from chat_window_test import Ui_MainWindow

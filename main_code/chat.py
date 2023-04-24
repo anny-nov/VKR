@@ -1,8 +1,8 @@
 import json
 import sys
 from PyQt6.QtWidgets import QDialog, QApplication, QListWidgetItem, QAbstractItemView
-#from PyQt6.QtCore import QObject
-#from PySide6.QtCore import Signal, SIGNAL, SLOT, Slot, QObject
+# from PyQt6.QtCore import QObject
+# from PySide6.QtCore import Signal, SIGNAL, SLOT, Slot, QObject
 import datetime
 import pytz
 from dateutil.tz import tzlocal
@@ -14,6 +14,7 @@ from sendWidget import Widget as senW
 from msg_json import serialize_message, deserialize_client_info
 from msg_json import deserialize_message
 from msg_json import deserialize_history
+
 
 class Dialog(QDialog, dialog):
 
@@ -27,20 +28,20 @@ class Dialog(QDialog, dialog):
 
         self.setupUi(self)
         self.sendbtn.clicked.connect(lambda: self.send_message(self.mlineEdit.text()))
-        #self.ChatlistWidget.currentRowChanged.connect(self.onCurrentRowChanged)
+        # self.ChatlistWidget.currentRowChanged.connect(self.onCurrentRowChanged)
         self.scroll_bar = self.ChatlistWidget.verticalScrollBar()
         self.scroll_bar.valueChanged.connect(self.onScroll)
 
-        #QObject.connect(con, SIGNAL(ConnectionHandler.receive_msg), self, SLOT(Dialog.receive_message))
+        # QObject.connect(con, SIGNAL(ConnectionHandler.receive_msg), self, SLOT(Dialog.receive_message))
         con.receive_msg.connect(self.receive_message)
         con.chat_history.connect(self.append_history)
         con.receive_client_info.connect(self.receive_client_info)
 
     def onScroll(self, rowPosition):
-        #print("Row pos    ", rowPosition)
+        # print("Row pos    ", rowPosition)
         if self.scroll_bar.minimum() == rowPosition:
             history_info = json.dumps({"room": self.chat_info.get('room', ''), "offset": self.offset})
-            #print(rowPosition)
+            # print(rowPosition)
             self.sio.emit("chat_history", history_info)
 
     def receive_client_info(self, data):
@@ -48,12 +49,11 @@ class Dialog(QDialog, dialog):
         self.my_client_info = client_info
         print(client_info)
 
-
-    def show_msg(self, message, sender, insert_pos = None):
-        #print(message)
+    def show_msg(self, message, sender, insert_pos=None):
+        # print(message)
         sender.message.setText(message.get('msg', ''))
-        #datetime_info = datetime.datetime.fromtimestamp(message.get('timestamp', 0))
-        #sender.label.setText(str(datetime_info))
+        # datetime_info = datetime.datetime.fromtimestamp(message.get('timestamp', 0))
+        # sender.label.setText(str(datetime_info))
         sender.label.setText(message.get("from_name", "unknown"))
         item = QListWidgetItem()
         item.setSizeHint(sender.sizeHint())
@@ -61,13 +61,12 @@ class Dialog(QDialog, dialog):
             self.ChatlistWidget.addItem(item)
             self.ChatlistWidget.setItemWidget(item, sender)
             self.ChatlistWidget.setMinimumWidth(sender.width())
-            self.ChatlistWidget.scrollToItem(item, hint = QAbstractItemView.PositionAtBottom)
+            self.ChatlistWidget.scrollToBottom()
+            #scrollToItem(item, hint=QAbstractItemView)
         else:
             self.ChatlistWidget.insertItem(insert_pos, item)
             self.ChatlistWidget.setItemWidget(item, sender)
             self.ChatlistWidget.setMinimumWidth(sender.width())
-
-
 
     def send_message(self, message_text):
         sendW = senW()
@@ -82,9 +81,8 @@ class Dialog(QDialog, dialog):
     def receive_message(self, data):
         message = deserialize_message(data)
         reciW = recW()
-        #print(data)
+        # print(data)
         self.show_msg(message, reciW)
-
 
     def append_history(self, data):
         print(self.offset)
@@ -96,9 +94,8 @@ class Dialog(QDialog, dialog):
             last_message = self.ChatlistWidget.item(0)
             data.reverse()
 
-
         for item in data:
-            sender = item.get('from','')
+            sender = item.get('from', '')
             if sender == _from:
                 sendW = senW()
                 self.show_msg(item, sendW, insert_pos)
@@ -115,9 +112,8 @@ class Dialog(QDialog, dialog):
 
         self.offset += 1
 
-#if __name__ == '__main__':
+# if __name__ == '__main__':
 #    app = QApplication(sys.argv)
 #    dialog = Dialog()
 #    dialog.show()
 #    app.exec_()
-

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget
 from ui_send import Ui_Form as form
 
 class Widget(QWidget, form):
