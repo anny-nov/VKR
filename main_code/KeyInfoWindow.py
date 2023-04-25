@@ -1,19 +1,11 @@
 import os
 
 import qrcode
-from PyQt6.QtCore import QSize, Qt, QTimer
-from PyQt6.QtWidgets import QApplication, \
-    QMainWindow, \
-    QPushButton, \
-    QWidget, \
-    QLabel, \
-    QListWidget, QListWidgetItem, QMenu, QGridLayout, QCheckBox
-from PyQt6.QtGui import QPixmap, QAction, QFont
-import sys
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QWidget, QLabel, \
+    QMenu, QGridLayout, QCheckBox
+from PyQt6.QtGui import QAction, QFont
 
-from APIKeyDialogWindow import APIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
-from computer import Computer
 import requests
 
 from main_code import menu
@@ -22,12 +14,6 @@ from Access import get_api_key
 
 API_KEY = ''
 
-
-def fill_api_key():
-    key_file = open('../api_key', 'r+')
-    key = str(key_file.read())
-    global API_KEY
-    API_KEY = key
 
 def parse_from_json(id):
     api_url = 'http://46.151.30.76:5000/api/client?id=' + id + '&api_key=' + API_KEY
@@ -198,6 +184,7 @@ class KeyInfoWindow(QMainWindow):
 
     def update_info(self):
         security_descriptor = self.form_descriptor()
+        self.key_info.security_descriptor = security_descriptor
         print(security_descriptor)
 
     def show_qr(self):

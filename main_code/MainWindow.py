@@ -5,15 +5,11 @@ from PyQt6.QtWidgets import QMainWindow, \
     QLabel, \
     QListWidget, QListWidgetItem, QMenu, QGridLayout
 from PyQt6.QtGui import QAction
-import os
 
 from APIKey import APIKey
 from APIKeyCustomWidget import APIKeyCustomQWidget
 from ComputerCustomWidget import QCustomQWidget
-from APIKeyDialogWindow import APIKeyDialogWindow
-from QRCodeDialog import QRCodeDialog
 from computer import Computer
-from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
 import requests
 
 from main_code import menu

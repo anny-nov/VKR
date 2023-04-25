@@ -1,11 +1,7 @@
 from datetime import datetime
 
 from PyQt6.QtCore import QSize, QTimer
-from PyQt6.QtWidgets import \
-    QMainWindow, \
-    QPushButton, \
-    QWidget, \
-    QLabel, \
+from PyQt6.QtWidgets import QMainWindow, QPushButton, QWidget, QLabel, \
     QListWidget, QListWidgetItem, QMenu, QGridLayout, QDateEdit, QHBoxLayout, QComboBox, QMessageBox
 from PyQt6.QtGui import QAction, QFont
 
@@ -19,12 +15,6 @@ from main_code.LogCustomWidget import LogCustomQWidget
 from main_code.Access import get_dec_key
 
 API_KEY = ''
-
-def fill_api_key():
-    #key_file = open('../api_key', 'r+')
-    #key = str(key_file.read())
-    global API_KEY
-    API_KEY = get_dec_key()
 
 def parse_from_json(hardware_id):
     api_url = 'http://46.151.30.76:5000/api/computer?hardware_id=' + hardware_id + '&api_key=' + API_KEY
@@ -71,7 +61,8 @@ class ComputerInfoWindow(QMainWindow):
     def __init__(self, hardware_id, parent=None):
         super().__init__(parent)
         self.log_type = None
-        fill_api_key()
+        global API_KEY
+        API_KEY = get_dec_key()
         self.comp_info = parse_from_json(hardware_id)
         self.logs = parse_log(hardware_id)
         self.initUI()

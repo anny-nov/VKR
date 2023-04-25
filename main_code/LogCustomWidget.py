@@ -32,9 +32,6 @@ class LogCustomQWidget(QWidget):
     def setText(self, text):
         self.log_text.setText(text)
 
-    def setIcon(self, text):
-        pass
-
     def setTime(self,text):
         self.time_label.setText(text)
         font = QFont()

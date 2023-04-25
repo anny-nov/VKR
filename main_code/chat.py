@@ -36,7 +36,6 @@ class Dialog(QDialog, dialog):
     def receive_client_info(self, data):
         client_info = deserialize_client_info(data)
         self.my_client_info = client_info
-        print(client_info)
 
     def show_msg(self, message, sender, insert_pos=None):
         sender.message.setText(message.get('msg', ''))
