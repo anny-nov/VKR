@@ -1,19 +1,11 @@
 import json
-import sys
-from PyQt6.QtWidgets import QDialog, QApplication, QListWidgetItem, QAbstractItemView
-# from PyQt6.QtCore import QObject
-# from PySide6.QtCore import Signal, SIGNAL, SLOT, Slot, QObject
-import datetime
-import pytz
-from dateutil.tz import tzlocal
+from PyQt6.QtWidgets import QDialog, QListWidgetItem
 
-from client_connect import ConnectionHandler
 from ui_chat import Ui_Dialog as dialog
 from recieveWidget import Widget as recW
 from sendWidget import Widget as senW
 from msg_json import serialize_message, deserialize_client_info
 from msg_json import deserialize_message
-from msg_json import deserialize_history
 
 
 class Dialog(QDialog, dialog):
@@ -21,27 +13,24 @@ class Dialog(QDialog, dialog):
     def __init__(self, con):
         super(Dialog, self).__init__()
         QDialog.__init__(self)
+        self.con = con
         self.chat_info = None
-        self.sio = con.sio
+        self.sio = self.con.sio
         self.offset = 0
         self.my_client_info = None
 
         self.setupUi(self)
         self.sendbtn.clicked.connect(lambda: self.send_message(self.mlineEdit.text()))
-        # self.ChatlistWidget.currentRowChanged.connect(self.onCurrentRowChanged)
         self.scroll_bar = self.ChatlistWidget.verticalScrollBar()
         self.scroll_bar.valueChanged.connect(self.onScroll)
 
-        # QObject.connect(con, SIGNAL(ConnectionHandler.receive_msg), self, SLOT(Dialog.receive_message))
-        con.receive_msg.connect(self.receive_message)
-        con.chat_history.connect(self.append_history)
-        con.receive_client_info.connect(self.receive_client_info)
+        self.con.receive_msg.connect(self.receive_message)
+        self.con.chat_history.connect(self.append_history)
+        self.con.receive_client_info.connect(self.receive_client_info)
 
     def onScroll(self, rowPosition):
-        # print("Row pos    ", rowPosition)
         if self.scroll_bar.minimum() == rowPosition:
             history_info = json.dumps({"room": self.chat_info.get('room', ''), "offset": self.offset})
-            # print(rowPosition)
             self.sio.emit("chat_history", history_info)
 
     def receive_client_info(self, data):
@@ -50,10 +39,7 @@ class Dialog(QDialog, dialog):
         print(client_info)
 
     def show_msg(self, message, sender, insert_pos=None):
-        # print(message)
         sender.message.setText(message.get('msg', ''))
-        # datetime_info = datetime.datetime.fromtimestamp(message.get('timestamp', 0))
-        # sender.label.setText(str(datetime_info))
         sender.label.setText(message.get("from_name", "unknown"))
         item = QListWidgetItem()
         item.setSizeHint(sender.sizeHint())
@@ -62,7 +48,6 @@ class Dialog(QDialog, dialog):
             self.ChatlistWidget.setItemWidget(item, sender)
             self.ChatlistWidget.setMinimumWidth(sender.width())
             self.ChatlistWidget.scrollToBottom()
-            #scrollToItem(item, hint=QAbstractItemView)
         else:
             self.ChatlistWidget.insertItem(insert_pos, item)
             self.ChatlistWidget.setItemWidget(item, sender)
@@ -81,7 +66,6 @@ class Dialog(QDialog, dialog):
     def receive_message(self, data):
         message = deserialize_message(data)
         reciW = recW()
-        # print(data)
         self.show_msg(message, reciW)
 
     def append_history(self, data):
@@ -112,8 +96,5 @@ class Dialog(QDialog, dialog):
 
         self.offset += 1
 
-# if __name__ == '__main__':
-#    app = QApplication(sys.argv)
-#    dialog = Dialog()
-#    dialog.show()
-#    app.exec_()
+    def closeEvent(self, event):
+        self.con.sio_disconnect()

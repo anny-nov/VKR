@@ -8,7 +8,7 @@ from PyQt6.QtGui import QAction
 import os
 
 from APIKey import APIKey
-from APIKeyCustomWidget import QKeyCustomQWidget
+from APIKeyCustomWidget import APIKeyCustomQWidget
 from ComputerCustomWidget import QCustomQWidget
 from APIKeyDialogWindow import APIKeyDialogWindow
 from QRCodeDialog import QRCodeDialog
@@ -17,7 +17,7 @@ from FirstAPIKeyDialogWindow import FirstAPIKeyDialogWindow
 import requests
 
 from main_code import menu
-from Access import check_api_key, get_api_key
+from Access import get_api_key
 
 API_KEY = ''
 
@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
 
     def fillAPIKeysListWidget(self):
         if self.index < len(self.list_of_keys):
-            keyLineWidget = QKeyCustomQWidget()
+            keyLineWidget = APIKeyCustomQWidget()
             keyLineWidget.setClientName(str(self.list_of_keys[self.index].name))
             keyLineWidget.setKeyType(str(self.list_of_keys[self.index].type))
             keyLineWidget.setButtonName(self.list_of_keys[self.index].id)

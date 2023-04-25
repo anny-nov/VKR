@@ -1,4 +1,7 @@
+import keyring
 from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QGridLayout, QLabel, QLineEdit
+from cryptography.fernet import Fernet
+
 
 
 class FirstAPIKeyDialogWindow(QDialog):
@@ -20,12 +23,24 @@ class FirstAPIKeyDialogWindow(QDialog):
 
     def ok_clicked(self):
         key = self.input_box.text()
-        if len(key)>0:
-            file = open('../api_key', 'w')
-            file.write(key)
+        if len(key) > 0:
+            enc_key_get(key)
             self.accept()
         else:
             pass
 
     def closeEvent(self, event):
         event.ignore()
+
+
+def enc_key_get(api_key):
+    key = Fernet.generate_key()
+    try:
+        keyring.set_password('VKR_API_ENC_KEY', 'api_key', key.decode())
+    except keyring.errors.KeyringError:
+        print('Failed to access the keyring.')
+    api_key = api_key.encode()
+    cipher = Fernet(key)
+    encrypted_api_key = cipher.encrypt(api_key)
+    with open('encrypted_api_key.bin', 'wb') as f:
+        f.write(encrypted_api_key)

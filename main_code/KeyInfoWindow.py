@@ -18,6 +18,7 @@ import requests
 
 from main_code import menu
 from main_code.APIKey import APIKey
+from Access import get_api_key
 
 API_KEY = ''
 
@@ -39,7 +40,8 @@ def parse_from_json(id):
 class KeyInfoWindow(QMainWindow):
     def __init__(self, id, parent=None):
         super().__init__(parent)
-        fill_api_key()
+        global API_KEY
+        API_KEY = get_api_key()
         self.key_info = parse_from_json(id)
         self.initUI()
         self._createMenuBar()
@@ -195,7 +197,8 @@ class KeyInfoWindow(QMainWindow):
         self.update_info()
 
     def update_info(self):
-        pass
+        security_descriptor = self.form_descriptor()
+        print(security_descriptor)
 
     def show_qr(self):
         filename = "api_key_qr.png"
@@ -205,4 +208,64 @@ class KeyInfoWindow(QMainWindow):
         dlg_qr.setWindowTitle("QRCode")
         if dlg_qr.exec():
             os.remove('api_key_qr.png')
+
+    def form_descriptor(self):
+        desc_string = ""
+        if self.comp_read.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.comp_update.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.comp_add.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.comp_delete.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        desc_string += ":"
+
+        if self.client_read.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.client_update.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.client_add.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.client_delete.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        desc_string += ":"
+
+        if self.log_read.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.log_update.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.log_add.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        if self.log_delete.isChecked():
+            desc_string += "1"
+        else:
+            desc_string += "0"
+        return desc_string
+
+    def reform_descriptor(self):
+        temp_descriptor = self.key_info.security_descriptor
+
 

@@ -16,7 +16,7 @@ from main_code import menu
 from main_code.Chart import Chart
 from main_code.Log import Log
 from main_code.LogCustomWidget import LogCustomQWidget
-from key_get import get_dec_key
+from main_code.Access import get_dec_key
 
 API_KEY = ''
 

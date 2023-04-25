@@ -8,11 +8,6 @@ from APIKey import APIKey
 
 API_KEY = ''
 
-def fill_api_key():
-    key_file = open('../api_key', 'r+')
-    key = str(key_file.read())
-    global API_KEY
-    API_KEY = key
 
 class APIKeyDialogWindow(QDialog):
     def __init__(self, parent=None):

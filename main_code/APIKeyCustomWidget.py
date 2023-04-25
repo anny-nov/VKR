@@ -4,9 +4,9 @@ from PyQt6.QtWidgets import QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 from KeyInfoWindow import KeyInfoWindow
 
 
-class QKeyCustomQWidget(QWidget):
+class APIKeyCustomQWidget(QWidget):
     def __init__(self, parent=None):
-        super(QKeyCustomQWidget, self).__init__(parent)
+        super(APIKeyCustomQWidget, self).__init__(parent)
         self.textQVBoxLayout = QVBoxLayout()
         self.ClientName = QLabel()
         self.KeyType = QLabel()
