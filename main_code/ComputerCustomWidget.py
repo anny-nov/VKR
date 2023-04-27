@@ -45,6 +45,5 @@ class QCustomQWidget(QWidget):
 
     def clicked(self):
         sender = self.sender()
-        print(sender.objectName())
         self.window = ComputerInfoWindow(sender.objectName())
         self.window.show()
