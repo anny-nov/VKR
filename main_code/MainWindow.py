@@ -45,7 +45,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         global API_KEY
         API_KEY = get_api_key()
-        #check_api_key()
         self.index = 0
         self._createMenuBar()
         self.initUI()
