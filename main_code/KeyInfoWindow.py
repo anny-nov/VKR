@@ -1,3 +1,4 @@
+import json
 import os
 
 import qrcode
@@ -164,6 +165,7 @@ class KeyInfoWindow(QMainWindow):
         self.confirm_button.deleteLater()
         self.layout.addWidget(self.settings_button, 6, 1)
         self.layout.update()
+        self.update_info()
 
         self.comp_read.setDisabled(True)
         self.comp_add.setDisabled(True)
@@ -180,12 +182,18 @@ class KeyInfoWindow(QMainWindow):
         self.log_add.setDisabled(True)
         self.log_delete.setDisabled(True)
 
-        self.update_info()
-
     def update_info(self):
         security_descriptor = self.form_descriptor()
         self.key_info.security_descriptor = security_descriptor
-        print(security_descriptor)
+        url = 'http://46.151.30.76:5000/api/client?api_key=test_api_key'
+        client_json_dict = {"id": self.key_info.id,
+                            "name": self.key_info.name,
+                            "api_key": self.key_info.api_key,
+                            "type": self.key_info.type,
+                            "security_descriptor": self.key_info.security_descriptor}
+        request = json.dumps(client_json_dict)
+        page = requests.post(url, json=request, verify=False)
+        page = page.json()
 
     def show_qr(self):
         filename = "api_key_qr.png"

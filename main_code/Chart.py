@@ -31,7 +31,6 @@ class Chart():
         API_KEY = get_api_key()
         api_url = 'http://afire.tech:5000/api/log?hardware_id=' + self.hardware_id + '&from=' + str(
             self.start) + '&to=' + str(self.finish) + '&type=1&api_key=' + API_KEY
-        print(api_url)
         log_list_json = requests.get(api_url)
         log_list_dict = log_list_json.json()
         log_list_dict = log_list_dict['logs']
@@ -45,7 +44,6 @@ class Chart():
             self.cpus.append(tmp.cpu)
             self.rams.append(tmp.ram)
             self.times.append(tmp.datetime)
-        print(self.times)
 
     def draw_cpu_chart(self):
         self.date_axis = TimeAxisItem(orientation='bottom')
