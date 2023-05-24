@@ -258,7 +258,7 @@ class ComputerInfoWindow(QMainWindow):
             self.logs = parse_logs_with_filters(self.comp_info.hardware_id, from_time, to_time, self.log_type)
             self.logListWidget.clear()
             self.CreateLogListWidget()
-            self.grid.addWidget(self.logListWidget, 6, 0, 7, 2)
+            self.grid.addWidget(self.logListWidget, 11, 0, 9, 2)
             self.grid.update()
         else:
             msg = QMessageBox()

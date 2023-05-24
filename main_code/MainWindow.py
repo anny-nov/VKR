@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, \
     QPushButton, \
     QWidget, \
     QLabel, \
-    QListWidget, QListWidgetItem, QMenu, QGridLayout
+    QListWidget, QListWidgetItem, QMenu, QGridLayout, QMessageBox
 from PyQt6.QtGui import QAction
 
 from APIKey import APIKey
@@ -18,14 +18,20 @@ from Access import get_api_key
 API_KEY = ''
 
 def parse_all():
-    message = 'http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY
-    all_comps_json = requests.get(message)
-    list_of_dicts = all_comps_json.json()
-    list_of_dicts = list_of_dicts['computers']
     list_of_comps = list()
-    for el in list_of_dicts:
-        tmp = Computer(**el)
-        list_of_comps.append(tmp)
+    message = 'http://46.151.30.76:5000/api/computers' + '?api_key=' + API_KEY
+    try:
+        all_comps_json = requests.get(message)
+        list_of_dicts = all_comps_json.json()
+        list_of_dicts = list_of_dicts['computers']
+        for el in list_of_dicts:
+            tmp = Computer(**el)
+            list_of_comps.append(tmp)
+    except:
+        msg = QMessageBox()
+        msg.setWindowTitle("Connection error")
+        msg.setText("Server did not answer response. Check the Internet connection.")
+        msg.exec()
     return list_of_comps
 
 
